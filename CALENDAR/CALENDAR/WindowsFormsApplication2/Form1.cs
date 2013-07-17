@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Excel = Microsoft.Office.Interop.Excel;
-using System.Reflection; 
+using System.Reflection;
 
 
 namespace WindowsFormsApplication2
@@ -38,13 +38,18 @@ namespace WindowsFormsApplication2
             Excel.Application oXL;
             Excel._Workbook oWB;
             Excel._Worksheet oSheet;
-            Excel.Range oRng;
+            //Excel.Worksheets sheets;
+            //Excel.Worksheet oSheet;
+
+            //Excel.Range oRng;//should probably learn how to use ranges, is more efficient.
 
             oXL = new Microsoft.Office.Interop.Excel.Application();
             oXL.Visible = true;
 
             //Get a new workbook.
-            oWB = (Excel._Workbook)(oXL.Workbooks.Add(Missing.Value));
+            //oWB = (Excel._Workbook)(oXL.Workbooks.Add(Missing.Value));
+            oWB = oXL.Workbooks.Open("Calendar.xlsx");
+            //Excel.Worksheet oSheet = oWB.ActiveSheet;
             oSheet = (Excel._Worksheet)oWB.ActiveSheet;
 
             //Add table headers going cell by cell.
@@ -53,6 +58,7 @@ namespace WindowsFormsApplication2
             oSheet.Cells[1, 3] = "End Time";
             oSheet.Cells[1, 4] = "Activity";
             oSheet.Cells[1, 5] = "Location";
+            oSheet.Cells.Interior.Color = 255;
 
             addAppointment(1995, 2, 21, 0, 0, "stuff", "New York");
             addAppointment(2013, 7, 23, 0600, 1200, "orientation", "Stony Brook");
@@ -66,12 +72,38 @@ namespace WindowsFormsApplication2
                 oSheet.Cells[i + 2, 4] = appointments[i].activity;
                 oSheet.Cells[i + 2, 5] = appointments[i].location;
             }
-
+            //oWB.Save();
+            //oWB.Close();
             oXL.Visible = true;
             oXL.UserControl = true;
+            ((Excel.Worksheet)oSheet).Change += new Microsoft.Office.Interop.Excel.DocEvents_ChangeEventHandler(anmdRange_Change);
+
+            //Marshal.ReleaseComObject();//don't know what this does
+        }
+        private void addNamedRanges(Excel.Application oXL)
+        {
+
+            //Excel._Workbook oWB;
+            //oWB = oXL.Workbooks.Open("Calendar.xlsx");
+            //Excel.Range anmdRange;
+            //Excel.Worksheet asht;
+            //System.Windows.Forms.Control.ControlCollection cc;
+
+            //asht = oWB.ActiveSheet;
+            //cc = asht.Controls;
+            //anmdRange = cc.AddNamedRange(asht.InnerObject.Range("a1"), "somenamedRange");
+
+            //asht.Change += new Microsoft.Office.Interop.Excel.DocEvents_ChangeEventHandler(anmdRange_Change);
 
         }
-        }
+
+        void anmdRange_Change(Microsoft.Office.Interop.Excel.Range Target)
+        {
+            MessageBox.Show(Target.Value2.ToString());
+        } 
+    }
+
+
     public class appointment
     {
         public int year;
